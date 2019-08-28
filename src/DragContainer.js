@@ -1,8 +1,8 @@
 /*
- * @Author: Ranvir Gorai 
- * @Date: 2018-01-30 15:04:08 
- * @Last Modified by: Ranvir Gorai 
- * @Last Modified time: 2018-01-30 15:04:08 
+ * @Author: Ranvir Gorai
+ * @Date: 2018-01-30 15:04:08
+ * @Last Modified by: Ranvir Gorai
+ * @Last Modified time: 2018-01-30 15:04:08
  */
 import React from 'react';
 import {
@@ -26,13 +26,26 @@ const allOrientations = [
 class DragModal extends React.Component {
   render() {
     let {startPosition} = this.props.content;
-    return <Modal transparent={true} supportedOrientations={allOrientations}>
-        <TouchableWithoutFeedback onPressIn={this.props.drop}>
-          <Animated.View style={this.props.location.getLayout()}>
-            {this.props.content.children}
-          </Animated.View>
-        </TouchableWithoutFeedback>
-    </Modal>
+    return (
+      <Modal transparent={true} supportedOrientations={allOrientations}>
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 84,
+            overflow: 'hidden',
+          }}
+        >
+          <TouchableWithoutFeedback onPressIn={this.props.drop}>
+            <Animated.View style={{ transform: this.props.location.getTranslateTransform() }}>
+              {this.props.content.children}
+            </Animated.View>
+          </TouchableWithoutFeedback>
+        </View>
+      </Modal>
+    )
   }
 }
 
@@ -42,8 +55,8 @@ class DragContainer extends React.Component {
         super(props);
         this.displayName = 'DragContainer';
         this.containerLayout;
-       
-        let location = new Animated.ValueXY();
+
+        let location = props.animatedValue || new Animated.ValueXY();
 
         this.state = {
           location
@@ -79,7 +92,7 @@ class DragContainer extends React.Component {
     }
 
     getChildContext() {
-      return {dragContext: this.getDragContext()}    
+      return {dragContext: this.getDragContext()}
     }
 
     static childContextTypes = {
@@ -105,12 +118,14 @@ class DragContainer extends React.Component {
     }
 
     inZone({x, y}, zone) {
-      return zone.x <= x && (zone.width + zone.x) >= x && zone.y <= y && (zone.height + zone.y) >= y;
+      // return zone.x <= x && (zone.width + zone.x) >= x && zone.y <= y && (zone.height + zone.y) >= y;
+      return zone.y <= y && (zone.height + zone.y) >= y;
     }
+
     _addLocationOffset(point) {
       if (!this.state.draggingComponent) return point;
       return {
-        x: point.x + (this.state.draggingComponent.startPosition.width / 2),
+        x: 0,//point.x + (this.state.draggingComponent.startPosition.width / 2),
         y: point.y + (this.state.draggingComponent.startPosition.height / 2),
       }
     }
@@ -118,11 +133,13 @@ class DragContainer extends React.Component {
     _handleDragging(point) {
       this._point = point;
       if (this._locked || !point) return;
+
+      const data = this.state.draggingComponent ? this.state.draggingComponent.data : null
       this.dropZones.forEach((zone) => {
         if (this.inZone(point, zone)) {
-          zone.onEnter(point);
+          zone.onEnter(point, data);
         } else {
-          zone.onLeave(point);
+          zone.onLeave(point, data);
         }
       })
     }
@@ -154,7 +171,7 @@ class DragContainer extends React.Component {
                 draggingComponent: null
               })
           })
-        
+
       }
       this._handleDragging({x: -100000, y: -100000});
       this.setState({
@@ -173,11 +190,16 @@ class DragContainer extends React.Component {
         },
         onMoveShouldSetPanResponder: (evt, gestureState) => !!this.state.draggingComponent,
 //        onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-        onPanResponderMove: (...args) => Animated.event([null, {
-           dx: this.state.location.x, // x,y are Animated.Value
-           dy: this.state.location.y,
-         }]).apply(this, args),
-        onPanResponderTerminationRequest: (evt, gestureState) => true,
+        onPanResponderMove: (...args) => {
+          // if (this.state.location.y._value >= 200) return null
+
+          Animated.event([null, {
+            dx: 0, // this.state.location.x, // x,y are Animated.Value
+            dy: this.state.location.y,
+          }])(...args)
+        },
+        // onPanResponderTerminationRequest: (evt, gestureState) => true,
+        onPanResponderTerminationRequest: (evt, gestureState) => false,
         onPanResponderRelease: (evt, gestureState) => {
           if (!this.state.draggingComponent) return;
           //Ensures we exit all of the active drop zones
@@ -189,11 +211,11 @@ class DragContainer extends React.Component {
     onDrag(ref, children, data) {
       ref.measure((...args) => {
         if (this._listener) this.state.location.removeListener(this._listener);
-        let location = new Animated.ValueXY();
+        let location = this.props.animatedValue || new Animated.ValueXY();
         this._listener = location.addListener(args => this._handleDragging(this._addLocationOffset(args)));
-        this._offset = {x: args[4], y: args[5]};
+        this._offset = {x: 0, y: args[5]};
         location.setOffset(this._offset);
-      
+
         this.setState({
           location,
           draggingComponent: {
@@ -203,7 +225,7 @@ class DragContainer extends React.Component {
             return React.cloneElement(child, {dragging: true})
           }),
           startPosition: {
-            x: args[4],
+            x: 0,
             y: args[5],
             width: args[2],
             height: args[3]

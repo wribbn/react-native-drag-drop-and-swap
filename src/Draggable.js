@@ -1,6 +1,6 @@
 /*
- * @Author: Ranvir Gorai 
- * @Date: 2018-01-30 15:04:14 
+ * @Author: Ranvir Gorai
+ * @Date: 2018-01-30 15:04:14
  * @Last Modified by: Ranvir Gorai
  * @Last Modified time: 2018-01-30 16:58:05
  */
@@ -34,17 +34,23 @@ class Draggable extends React.Component {
       dragOn: 'onLongPress'
     }
 
+    componentDidUpdate (prevProps, prevState) {
+      if (prevProps.disabled && !this.props.disabled) {
+        this._initiateDrag()
+      }
+    }
+
     render() {
-        
+
         let isDragging = this.context.dragContext.dragging && this.context.dragContext.dragging.ref;
         isDragging = isDragging && isDragging === this.refs.wrapper;
-        return <TouchableOpacity activeOpacity={this.props.activeOpacity} style={this.props.style} onLongPress={this.props.dragOn === 'onLongPress' ? this._initiateDrag : null}  onPress={this.props.onPress} onPressIn={this.props.dragOn === 'onPressIn' ? this._initiateDrag : null} ref="wrapper">
+        return <View activeOpacity={this.props.activeOpacity} style={this.props.style} onLongPress={this.props.dragOn === 'onLongPress' ? this._initiateDrag : null}  onPress={this.props.onPress} onPressIn={this.props.dragOn === 'onPressIn' ? this._initiateDrag : null} ref="wrapper">
         {
           React.Children.map(this.props.children, child => {
           return React.cloneElement(child, {ghost: isDragging})
         })
         }
-      </TouchableOpacity>;
+      </View>;
     }
 }
 

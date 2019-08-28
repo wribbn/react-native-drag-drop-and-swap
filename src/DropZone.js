@@ -1,8 +1,8 @@
 /*
- * @Author: Ranvir Gorai 
- * @Date: 2018-01-30 15:04:18 
- * @Last Modified by: Ranvir Gorai 
- * @Last Modified time: 2018-01-30 15:04:18 
+ * @Author: Ranvir Gorai
+ * @Date: 2018-01-30 15:04:18
+ * @Last Modified by: Ranvir Gorai
+ * @Last Modified time: 2018-01-30 15:04:18
  */
 import React from 'react';
 import {
@@ -21,7 +21,7 @@ class DropZone extends React.Component {
         this.onLeave = this.onLeave.bind(this);
         this.onDrop = this.onDrop.bind(this);
     }
-    
+
     reportMeasurements() {
       if (this.props.dragging) this.context.dragContext.removeZone(this.refs.wrapper);
       this.refs.wrapper.measure((_, __, width, height, x, y) => {
@@ -48,20 +48,22 @@ class DropZone extends React.Component {
       this.reportMeasurements();
     }
 
-    onEnter({x, y}) {
+    onEnter({x, y}, data) {
       if (this.props.disabled) return;
+      if (!data || this.props.data === data) return;
       if (!this.state.active) {
-        if (this.props.onEnter) this.props.onEnter();
+        if (this.props.onEnter) this.props.onEnter(data);
         this.setState({
           active: true
         })
       }
     }
 
-    onLeave() {
+    onLeave(point, data) {
       if (this.props.disabled) return;
+      if (!data || this.props.data === data) return;
       if (this.state.active) {
-        if (this.props.onLeave) this.props.onLeave();
+        if (this.props.onLeave) this.props.onLeave(data);
         this.setState({
           active: false
         })
@@ -85,7 +87,7 @@ class DropZone extends React.Component {
           {
             React.Children.map(this.props.children, child => {
               return React.cloneElement(child, Object.assign({}, this.props, {dragOver: this.state.active}));
-            }) 
+            })
           }
         </View>;
     }
