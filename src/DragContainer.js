@@ -58,6 +58,8 @@ class DragContainer extends React.Component {
 
         let location = props.animatedValue || new Animated.ValueXY();
 
+        this.finger = new Animated.ValueXY()
+
         this.state = {
           location
         }
@@ -194,6 +196,8 @@ class DragContainer extends React.Component {
           // if (this.state.location.y._value >= 200) return null
 
           Animated.event([null, {
+            moveX: this.finger.x,
+            moveY: this.finger.y,
             dx: 0, // this.state.location.x, // x,y are Animated.Value
             dy: this.state.location.y,
           }])(...args)
