@@ -34,11 +34,11 @@ class Draggable extends React.Component {
       dragOn: 'onLongPress'
     }
 
-    componentDidUpdate (prevProps, prevState) {
-      if (prevProps.disabled && !this.props.disabled) {
-        this._initiateDrag()
-      }
-    }
+    // componentDidUpdate (prevProps, prevState) {
+    //   if (prevProps.disabled && !this.props.disabled) {
+    //     this._initiateDrag()
+    //   }
+    // }
 
     render() {
 
