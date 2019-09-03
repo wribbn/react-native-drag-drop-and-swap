@@ -49,8 +49,18 @@ class DropZone extends React.Component {
     }
 
     onEnter({x, y}, data) {
-      if (this.props.disabled) return;
-      if (!data || this.props.data === data) return;
+      if (
+        this.props.disabled
+        ||
+        !data
+        ||
+        this.props.data.item._id === data.item._id
+        ||
+        this.props.before && this.props.data.prev && this.props.data.prev._id === data.item._id
+      ) {
+        return;
+      }
+
       if (!this.state.active) {
         if (this.props.onEnter) this.props.onEnter(data);
         this.setState({
@@ -60,8 +70,18 @@ class DropZone extends React.Component {
     }
 
     onLeave(point, data) {
-      if (this.props.disabled) return;
-      if (!data || this.props.data === data) return;
+      if (
+        this.props.disabled
+        ||
+        !data
+        ||
+        this.props.data.item._id === data.item._id
+        ||
+        this.props.before && this.props.data.prev && this.props.data.prev._id === data.item._id
+      ) {
+        return;
+      }
+
       if (this.state.active) {
         if (this.props.onLeave) this.props.onLeave(data);
         this.setState({
