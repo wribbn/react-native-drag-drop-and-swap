@@ -16,6 +16,8 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 
+import _ from 'lodash'
+
 global.Easing = Easing;
 
 const allOrientations = [
@@ -132,7 +134,7 @@ class DragContainer extends React.Component {
       }
     }
 
-    _handleDragging(point) {
+    _handleDragging = (point) => {
       this._point = point;
       if (this._locked || !point) return;
 
