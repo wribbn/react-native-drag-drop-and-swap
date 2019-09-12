@@ -135,16 +135,18 @@ class DragContainer extends React.Component {
     }
 
     _handleDragging = (point) => {
-      this._point = point;
-      if (this._locked || !point) return;
+      requestAnimationFrame(() => {
+        this._point = point;
+        if (this._locked || !point) return;
 
-      const data = this.state.draggingComponent ? this.state.draggingComponent.data : null
-      this.dropZones.forEach((zone) => {
-        if (this.inZone(point, zone)) {
-          zone.onEnter(point, data);
-        } else {
-          zone.onLeave(point, data);
-        }
+        const data = this.state.draggingComponent ? this.state.draggingComponent.data : null
+        this.dropZones.forEach((zone) => {
+          if (this.inZone(point, zone)) {
+            zone.onEnter(point, data);
+          } else {
+            zone.onLeave(point, data);
+          }
+        })
       })
     }
 
