@@ -41,8 +41,8 @@ class DropZone extends React.Component {
     }
 
     componentWillUnmount() {
-      this.context.dragContext.removeZone(this.refs.wrapper);
       clearInterval(this._timer);
+      this.context.dragContext.removeZone(this.refs.wrapper);
     }
     componentDidUpdate() {
       this.reportMeasurements();
