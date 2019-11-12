@@ -245,10 +245,17 @@ class DragContainer extends React.Component {
     }
 
     render() {
-        return <View style={[{flex: 1}, this.props.style]} onLayout={e => this.containerLayout = e.nativeEvent.layout} {...this._panResponder.panHandlers}>
-          {this.props.children}
-          {this.state.draggingComponent ? <DragModal content={this.state.draggingComponent} location={this.state.location} drop={this._handleDrop} /> : null}
-        </View>;
+        return (
+          <View
+            style={[{flex: 1}, this.props.style]}
+            onLayout={e => this.containerLayout = e.nativeEvent.layout}
+            {...this._panResponder.panHandlers}
+            {...this.props}
+          >
+            {this.props.children}
+            {this.state.draggingComponent ? <DragModal content={this.state.draggingComponent} location={this.state.location} drop={this._handleDrop} /> : null}
+          </View>
+        )
     }
 }
 
